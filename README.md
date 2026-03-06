@@ -28,3 +28,7 @@ I expect the user to be semi interested in history or culture. There aren't too 
 
 - Problems When Mapping
 I have run into a few roadblocks in my process. First, I struggled to add a legend to my map. It looks as though I could not get a Leaflet specific Esri code. I was unable to find one on the website. I thought I had found one, but then it did not map. So, I am attempting to do click infomation instead to show the informaiton. However, I haven't gotten that to work yet.
+
+
+Website: https://mayaomiller.github.io/
+https://github.com/mayaomiller/mayaomiller.github.io.git
