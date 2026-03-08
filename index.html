@@ -1,76 +1,209 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta charset="utf-8" />
-<title>USA Historic Sites</title>
+    <meta charset="utf-8" />
+    <title>USA Historic Sites</title>
 
-<!-- Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- Esri Leaflet -->
-<script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
+    <!-- Esri Leaflet -->
+    <script src="https://unpkg.com/esri-leaflet/dist/esri-leaflet.js"></script>
 
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
 
-<style>
-  #map {
-    height: 100vh;
-    width: 100%;
-  }
-</style>
+        /* Legend Styling */
+        .legend {
+            background: white;
+            padding: 10px;
+            line-height: 18px;
+            color: #333;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .legend h4 {
+            margin: 0 0 5px;
+            font-size: 14px;
+        }
+
+        .legend img {
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        /* Info Button */
+        .info-button {
+            background: white;
+            padding: 8px 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 6px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Info Panel */
+        #infoPanel {
+            position: absolute;
+            top: 80px;
+            left: 80%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 40px;
+            width: 400px;
+            border-radius: 6px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            display: none;
+            z-index: 1000;
+        }
+
+        #infoPanel button {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 
 <body>
 
-<div id="map"></div>
+    <div id="map"></div>
 
-<script>
+    <!-- Info Panel -->
+    <div id="infoPanel">
+        <h3>About This Map</h3>
+        <p>
+            This map displays historic locations listed on the National Register of Historic Places (NRHP) across the
+            United States.
+        </p>
 
-var map = L.map('map').setView([39, -98], 4);
+        <p>
+            Click on a location to view the site name, city, and address. The Legend displays the site type: Historic
+            Place, Historic Landmark, and if it is a location that has been removed from the National Register of
+            Historic Loctions. Enjoy Exploring the Map!
+        </p>
 
-//Base Map
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap'
-}).addTo(map);
+        <p>
+            Data source: <a href="#">https://catalog.data.gov/dataset/national-register-of-historic-places-9d3f5</a>
+        </p>
 
-//Map Layer
-var nrhpLayer = L.esri.dynamicMapLayer({
-  url: "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer",
-  opacity: 0.7
-}).addTo(map);
+        <p>
+            Map by: Maya Miller in 
+            March 2026
+        </p>
 
-// CLICK IDENTIFY
-map.on("click", function(e){
+        <button onclick="closeInfo()">Close</button>
+    </div>
+
+    <script>
+        var map = L.map('map').setView([39, -98], 4);
+
+        // Base Map
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap'
+        }).addTo(map);
+
+        // Esri Map Layer
+        var nrhpLayer = L.esri.dynamicMapLayer({
+            url: "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer",
+            opacity: 0.7
+        }).addTo(map);
+
+        // Click Identify
+        map.on("click", function(e){
 
 L.esri.identifyFeatures({
   url: "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer"
 })
 .on(map)
 .at(e.latlng)
+.layers('visible:0')
 .tolerance(5)
 .run(function(error, featureCollection){
 
-  if (featureCollection.features.length > 0){
-
-    var props = featureCollection.features[0].properties;
-
-    var popupContent =
-    "<b>" + (props.RESOURCE_NAME || "Historic Site") + "</b><br>" +
-        "State: " + (props.STATE || "Unknown") + "<br>" +
-        "County: " + (props.COUNTY || "Unknown");
-
-    L.popup()
-      .setLatLng(e.latlng)
-      .setContent(popupContent)
-      .openOn(map);
-
+  if (error || !featureCollection.features.length) {
+    return;
   }
 
-});
+  var props = featureCollection.features[0].properties;
+
+  var popupContent =
+    "<b>Site Name:</b> " + (props.RESNAME) + "<br>" +
+    "<b>City:</b> " + (props.City) + "<br>" +
+    "<b>Address:</b> " + (props.Address);
+
+  L.popup()
+    .setLatLng(e.latlng)
+    .setContent(popupContent)
+    .openOn(map);
 
 });
 
-</script>
+});
+
+        // Legend
+        var legend = L.control({
+            position: "bottomright"
+        });
+
+        legend.onAdd = function () {
+
+            var div = L.DomUtil.create("div", "legend");
+            div.innerHTML = "<h4>NRHP Legend</h4>";
+
+            fetch(
+                    "https://mapservices.nps.gov/arcgis/rest/services/cultural_resources/nrhp_locations/MapServer/legend?f=pjson")
+                .then(response => response.json())
+                .then(data => {
+
+                    data.layers.forEach(function (layer) {
+
+                        layer.legend.forEach(function (item) {
+
+                            var img = "data:" + item.contentType + ";base64," + item.imageData;
+
+                            div.innerHTML +=
+                                "<div>" +
+                                "<img src='" + img + "' width='20' height='20'/>" +
+                                item.label +
+                                "</div>";
+
+                        });
+
+                    });
+
+                });
+
+            return div;
+        };
+
+        legend.addTo(map);
+
+        // Info Button
+        var infoControl = L.control({
+            position: "topright"
+        });
+
+        infoControl.onAdd = function (map) {
+            var div = L.DomUtil.create("div", "info-button");
+            div.innerHTML = "Info";
+            div.onclick = function () {
+                document.getElementById("infoPanel").style.display = "block";
+            };
+            return div;
+        };
+
+        infoControl.addTo(map);
+
+        function closeInfo() {
+            document.getElementById("infoPanel").style.display = "none";
+        }
+    </script>
 
 </body>
+
 </html>

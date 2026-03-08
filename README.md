@@ -32,3 +32,13 @@ I have run into a few roadblocks in my process. First, I struggled to add a lege
 
 Website: https://mayaomiller.github.io/
 https://github.com/mayaomiller/mayaomiller.github.io.git
+
+
+UPDATES FOR FINAL:
+
+- What has been updated:
+I was able to get the legend mapped. I was struggling with that aspect of the map previously, but I figured out that it was a different link that I had to use. Then I was able to continue with the design portion that I was doing before. I also finalized a click feature that gives more information about each site when you click on the site. I had previously added this because I struggled with the legend. But I kept it as an additional feature and now have both. I also added a click info button where I was able to add a bit of info about my map, my source, and the date the map was created. 
+
+-Overall my project utilized Esri and Leaflet technology. However, I did pull code that we learned from other modules outside of the Esri specific section. 
+
+-Although I ultimately had to change course and examine the United States, I am very happy with my map overall. I also decreased the scale of my project slightly as I went along. However, I think it is a very approachable and mostly aethethically pleasing map. My ultimate goal was to balance the two. The colors on the map go together well. Although one color largely dominates, there isn't much that can be done when there is more data in one category than the others. 
