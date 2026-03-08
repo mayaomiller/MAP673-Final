@@ -1,1 +1,7 @@
-
+{
+    "title": "USA Historic Sites",
+    "info": "This map displays historic locations listed on the National Register of Historic Places (NRHP) across the United States.",
+    "coordinates": [39, -98],
+    "author": "Maya",
+    "link": "http://newmapsplus.github.io/projects/"
+}
